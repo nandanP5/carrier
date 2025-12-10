@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Carrier Lookup</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 30px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 30px;
+            max-width: 1200px;
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            grid-template-areas:
+                "header header"
+                "search search"
+                "list details";
+        }
+
+        .header-section {
+            grid-area: header;
+        }
+
+        .search-section {
+            grid-area: search;
+        }
+
+        .list-section {
+            grid-area: list;
+        }
+
+        .details-section {
+            grid-area: details;
+        }
+
+        h2 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 0;
+            font-size: 14px;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 12px 15px;
+            margin-bottom: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .search-box:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .search-box::placeholder {
+            color: #999;
+        }
+
+        select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background-color: white;
+            cursor: pointer;
+            height: 250px;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        select option {
+            padding: 8px;
+        }
+
+        .details-box {
+            padding: 25px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            display: none;
+            animation: slideDown 0.3s ease;
+            position: sticky;
+            top: 30px;
+        }
+
+        .details-box.show {
+            display: block;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .details-box h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        .details-item {
+            color: #555;
+            margin-bottom: 18px;
+            font-size: 13px;
+            line-height: 1.6;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .details-box b {
+            color: #667eea;
+            font-weight: 600;
+            min-width: 45px;
+            flex-shrink: 0;
+        }
+
+        .email-value {
+            flex: 1;
+            word-break: break-all;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .copy-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .copy-btn:hover {
+            background: #764ba2;
+            transform: scale(1.05);
+        }
+
+        .copy-btn.copied {
+            background: #4caf50;
+        }
+
+        @media (max-width: 900px) {
+            .container {
+                grid-template-columns: 1fr;
+                grid-template-areas:
+                    "header"
+                    "search"
+                    "list"
+                    "details";
+            }
+
+            .details-box {
+                position: static;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+
+            h2 {
+                font-size: 24px;
+            }
+
+            select {
+                height: 150px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+    <div class="header-section">
+        <h2>Carrier Directory</h2>
+        <p class="subtitle">Search and view carrier contact information</p>
+    </div>
+
+    <div class="search-section">
+        <input type="text" id="search" class="search-box" placeholder="Search carrier...">
+    </div>
+
+    <div class="list-section">
+        <select id="carrierSelect" size="10"></select>
+    </div>
+
+    <div class="details-section">
+        <div id="details" class="details-box">
+            <h3>Carrier Details</h3>
+            <div class="details-item">
+                <b>L1:</b>
+                <div class="email-value">
+                    <span id="l1">-</span>
+                    <button class="copy-btn" data-level="l1" onclick="copyToClipboard(this)">Copy</button>
+                </div>
+            </div>
+            <div class="details-item">
+                <b>L2:</b>
+                <div class="email-value">
+                    <span id="l2">-</span>
+                    <button class="copy-btn" data-level="l2" onclick="copyToClipboard(this)">Copy</button>
+                </div>
+            </div>
+            <div class="details-item">
+                <b>L3:</b>
+                <div class="email-value">
+                    <span id="l3">-</span>
+                    <button class="copy-btn" data-level="l3" onclick="copyToClipboard(this)">Copy</button>
+                </div>
+            </div>
+            <div class="details-item">
+                <b>L4:</b>
+                <div class="email-value">
+                    <span id="l4">-</span>
+                    <button class="copy-btn" data-level="l4" onclick="copyToClipboard(this)">Copy</button>
+                </div>
+            </div>
+            <div class="details-item">
+                <b>L5:</b>
+                <div class="email-value">
+                    <span id="l5">-</span>
+                    <button class="copy-btn" data-level="l5" onclick="copyToClipboard(this)">Copy</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+async function loadCSV() {
+    const response = await fetch("data.csv");
+    const text = await response.text();
+
+    const rows = text.trim().split("\n");
+    const headers = rows[0].split(",");
+    const data = rows.slice(1).map(r => {
+        const cols = r.split(",");
+        return {
+            Carrier: cols[0],
+            L1: cols[1],
+            L2: cols[2],
+            L3: cols[3],
+            L4: cols[4],
+            L5: cols[5]
+        };
+    });
+
+    return data;
+}
+
+function copyToClipboard(button) {
+    const level = button.getAttribute('data-level');
+    const text = document.getElementById(level).textContent;
+    
+    if (text === '-') {
+        alert('No data to copy');
+        return;
+    }
+
+    navigator.clipboard.writeText(text).then(() => {
+        button.textContent = 'Copied!';
+        button.classList.add('copied');
+        setTimeout(() => {
+            button.textContent = 'Copy';
+            button.classList.remove('copied');
+        }, 2000);
+    }).catch(err => {
+        alert('Failed to copy');
+    });
+}
+
+document.addEventListener("DOMContentLoaded", async () => {
+    const data = await loadCSV();
+    const dropdown = document.getElementById("carrierSelect");
+    const search = document.getElementById("search");
+
+    function populate(list) {
+        dropdown.innerHTML = "";
+        list.forEach(item => {
+            let option = document.createElement("option");
+            option.value = item.Carrier;
+            option.textContent = item.Carrier;
+            dropdown.appendChild(option);
+        });
+    }
+
+    populate(data);
+
+    search.addEventListener("keyup", () => {
+        const val = search.value.toLowerCase();
+        const filtered = data.filter(d => d.Carrier.toLowerCase().includes(val));
+        populate(filtered);
+    });
+
+    dropdown.addEventListener("change", () => {
+        const selected = data.find(d => d.Carrier === dropdown.value);
+
+        if (selected) {
+            document.getElementById("l1").textContent = selected.L1 || "-";
+            document.getElementById("l2").textContent = selected.L2 || "-";
+            document.getElementById("l3").textContent = selected.L3 || "-";
+            document.getElementById("l4").textContent = selected.L4 || "-";
+            document.getElementById("l5").textContent = selected.L5 || "-";
+
+            document.getElementById("details").classList.add("show");
+        }
+    });
+});
+</script>
+
+</body>
+</html>
