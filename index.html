@@ -1,216 +1,226 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Carrier Lookup</title>
+    <meta charset="UTF-8" />
+    <title>ONEXTEL Carrier Lookup</title>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600&family=Roboto+Slab:wght@400;500&display=swap" rel="stylesheet">
+
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        :root{
+            --primary: #6EC1E4;
+            --secondary: #54595F;
+            --text: #7A7A7A;
+            --accent: #61CE70;
+            --danger1: #DC3B3D;
+            --dark: #222222;
+
+            --radius: 14px;
+            --shadow: 0 12px 32px rgba(0,0,0,0.08);
+            --bg: linear-gradient(135deg, #ebf8ff 0%, #d7eff9 100%);
         }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 30px 20px;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
+        *{margin:0;padding:0;box-sizing:border-box}
+
+        body{
+            font-family:"Roboto",sans-serif;
+            background:var(--bg);
+            min-height:100vh;
+            padding:36px 20px;
+            color:var(--dark);
+            display:flex;
+            justify-content:center;
+            align-items:flex-start;
         }
 
-        .container {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            padding: 30px;
-            max-width: 1200px;
-            width: 100%;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
-            grid-template-areas:
-                "header header"
-                "search search"
-                "list details";
+        .container{
+            width:100%;
+            max-width:1250px;
+            display:grid;
+            grid-template-columns:1fr 1fr;
+            gap:30px;
         }
 
-        .header-section {
-            grid-area: header;
+        /* Branding */
+        .branding{
+            grid-column:span 2;
+            display:flex;
+            align-items:center;
+            gap:14px;
         }
 
-        .search-section {
-            grid-area: search;
+        .logo{
+            width:55px;
+            height:55px;
+            border-radius:12px;
+            background:#fff;
+            padding:6px;
+            box-shadow:var(--shadow);
+            object-fit:contain;
         }
 
-        .list-section {
-            grid-area: list;
+        .title{
+            font-size:30px;
+            font-weight:600;
+            color:var(--dark);
+            border-left:4px solid var(--danger1);
+            padding-left:12px;
         }
 
-        .details-section {
-            grid-area: details;
+        .subtitle{
+            color:var(--text);
+            font-size:14px;
+            margin-top:4px;
         }
 
-        h2 {
-            color: #333;
-            margin-bottom: 10px;
-            font-size: 28px;
+        /* Search */
+        .search-section{grid-column:span 2}
+
+        .search-box{
+            width:100%;
+            padding:14px 18px;
+            border-radius:var(--radius);
+            border:1px solid #e6eef4;
+            background:#fff;
+            font-size:15px;
+            color:var(--dark);
+            box-shadow:var(--shadow);
         }
 
-        .subtitle {
-            color: #666;
-            margin-bottom: 0;
-            font-size: 14px;
+        .search-box:focus{
+            outline:none;
+            border-color:var(--primary);
+            box-shadow:0 0 0 3px rgba(110,193,228,0.2);
         }
 
-        .search-box {
-            width: 100%;
-            padding: 12px 15px;
-            margin-bottom: 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 14px;
-            transition: all 0.3s ease;
+        /* Carrier List */
+        .list-section select{
+            width:100%;
+            height:420px;
+            background:white;
+            border-radius:var(--radius);
+            border:1px solid #e8eef2;
+            padding:10px;
+            font-size:15px;
+            color:var(--dark);
+            box-shadow:var(--shadow);
+            overflow-y:auto;
         }
 
-        .search-box:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        /* Scrollbar */
+        .list-section select::-webkit-scrollbar{width:9px}
+        .list-section select::-webkit-scrollbar-track{background:#f6f7f8;border-radius:10px}
+        .list-section select::-webkit-scrollbar-thumb{background:#cfd8de;border-radius:10px}
+
+        /* Improved spacing */
+        .list-section option{
+            padding:14px 12px;
+            border-radius:10px;
+            margin:6px 0;
+            font-size:16px;
+            cursor:pointer;
+            line-height:1.4;
         }
 
-        .search-box::placeholder {
-            color: #999;
+        .list-section option:hover{
+            background:rgba(220,59,61,0.12);
+            border-left:3px solid var(--danger1);
         }
 
-        select {
-            width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 14px;
-            transition: all 0.3s ease;
-            background-color: white;
-            cursor: pointer;
-            height: 250px;
+        /* Details Panel */
+        .details-box{
+            padding:26px;
+            border-radius:var(--radius);
+            background:#fff;
+            border-top:4px solid var(--danger1);
+            box-shadow:var(--shadow);
+            display:none;
+            animation:fadeIn .32s ease;
         }
 
-        select:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        .details-box.show{display:block}
+
+        .details-box h3{
+            font-family:"Roboto Slab",serif;
+            font-size:22px;
+            margin-bottom:20px;
+            border-left:4px solid var(--danger1);
+            padding-left:12px;
+            color:var(--dark);
         }
 
-        select option {
-            padding: 8px;
+        .details-item{
+            display:flex;
+            align-items:flex-start;
+            margin-bottom:14px;
+            font-size:15px;
         }
 
-        .details-box {
-            padding: 25px;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            border-radius: 8px;
-            border-left: 4px solid #667eea;
-            display: none;
-            animation: slideDown 0.3s ease;
-            position: sticky;
-            top: 30px;
+        .details-item b{
+            width:42px;
+            color:var(--secondary);
         }
 
-        .details-box.show {
-            display: block;
+        .email-value{
+            flex:1;
+            display:flex;
+            gap:10px;
+            align-items:center;
+            word-break:break-word;
         }
 
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        /* Copy button */
+        .copy-btn{
+            padding:7px 12px;
+            border:none;
+            border-radius:8px;
+            background:var(--primary);
+            color:white;
+            cursor:pointer;
+            font-size:12px;
+            transition:.2s;
         }
 
-        .details-box h3 {
-            color: #333;
-            margin-bottom: 15px;
-            font-size: 18px;
+        .copy-btn:hover{background:#57aacc}
+        .copy-btn.copied{background:var(--accent)}
+
+        /* Missing indicator */
+        .missing-dot{
+            width:10px;
+            height:10px;
+            background:var(--danger1);
+            border-radius:50%;
+            display:inline-block;
+            margin-right:6px;
         }
 
-        .details-item {
-            color: #555;
-            margin-bottom: 18px;
-            font-size: 13px;
-            line-height: 1.6;
-            display: flex;
-            align-items: flex-start;
-            gap: 10px;
+        /* Toast */
+        .toast{
+            position:fixed;
+            right:22px;
+            bottom:22px;
+            padding:12px 16px;
+            border-radius:10px;
+            color:#fff;
+            font-weight:500;
+            box-shadow:0 10px 30px rgba(0,0,0,0.15);
+            opacity:0;
+            pointer-events:none;
+            transition:.28s;
         }
 
-        .details-box b {
-            color: #667eea;
-            font-weight: 600;
-            min-width: 45px;
-            flex-shrink: 0;
+        .toast.show{opacity:1}
+        .toast.success{background:linear-gradient(90deg,var(--accent),#18b45a)}
+        .toast.error{background:linear-gradient(90deg,var(--danger1),#b71c20)}
+
+        @keyframes fadeIn{
+            from{opacity:0;transform:translateY(6px)}
+            to{opacity:1;transform:none}
         }
 
-        .email-value {
-            flex: 1;
-            word-break: break-all;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .copy-btn {
-            background: #667eea;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 12px;
-            transition: all 0.2s ease;
-            white-space: nowrap;
-            flex-shrink: 0;
-        }
-
-        .copy-btn:hover {
-            background: #764ba2;
-            transform: scale(1.05);
-        }
-
-        .copy-btn.copied {
-            background: #4caf50;
-        }
-
-        @media (max-width: 900px) {
-            .container {
-                grid-template-columns: 1fr;
-                grid-template-areas:
-                    "header"
-                    "search"
-                    "list"
-                    "details";
-            }
-
-            .details-box {
-                position: static;
-            }
-        }
-
-        @media (max-width: 600px) {
-            .container {
-                padding: 20px;
-            }
-
-            h2 {
-                font-size: 24px;
-            }
-
-            select {
-                height: 150px;
-            }
+        @media(max-width:900px){
+            .container{grid-template-columns:1fr}
         }
     </style>
 </head>
@@ -218,139 +228,153 @@
 <body>
 
 <div class="container">
-    <div class="header-section">
-        <h2>Carrier Directory</h2>
-        <p class="subtitle">Search and view carrier contact information</p>
+
+    <!-- Branding Section -->
+    <div class="branding">
+        <img src="logo.png" class="logo" alt="ONEXTEL Logo">
+        <div>
+            <div class="title">ONEXTEL Carrier Directory</div>
+            <div class="subtitle">Enterprise Escalation Lookup System</div>
+        </div>
     </div>
 
+    <!-- Search -->
     <div class="search-section">
-        <input type="text" id="search" class="search-box" placeholder="Search carrier...">
+        <input id="search" class="search-box" placeholder="Search carriers...">
     </div>
 
+    <!-- Carrier List -->
     <div class="list-section">
-        <select id="carrierSelect" size="10"></select>
+        <select id="carrierSelect" size="14"></select>
     </div>
 
+    <!-- Details Panel -->
     <div class="details-section">
         <div id="details" class="details-box">
             <h3>Carrier Details</h3>
+
             <div class="details-item">
                 <b>L1:</b>
                 <div class="email-value">
                     <span id="l1">-</span>
-                    <button class="copy-btn" data-level="l1" onclick="copyToClipboard(this)">Copy</button>
+                    <button class="copy-btn" data-level="l1">Copy</button>
                 </div>
             </div>
+
             <div class="details-item">
                 <b>L2:</b>
                 <div class="email-value">
                     <span id="l2">-</span>
-                    <button class="copy-btn" data-level="l2" onclick="copyToClipboard(this)">Copy</button>
+                    <button class="copy-btn" data-level="l2">Copy</button>
                 </div>
             </div>
+
             <div class="details-item">
                 <b>L3:</b>
                 <div class="email-value">
                     <span id="l3">-</span>
-                    <button class="copy-btn" data-level="l3" onclick="copyToClipboard(this)">Copy</button>
+                    <button class="copy-btn" data-level="l3">Copy</button>
                 </div>
             </div>
+
             <div class="details-item">
                 <b>L4:</b>
                 <div class="email-value">
                     <span id="l4">-</span>
-                    <button class="copy-btn" data-level="l4" onclick="copyToClipboard(this)">Copy</button>
+                    <button class="copy-btn" data-level="l4">Copy</button>
                 </div>
             </div>
+
             <div class="details-item">
                 <b>L5:</b>
                 <div class="email-value">
                     <span id="l5">-</span>
-                    <button class="copy-btn" data-level="l5" onclick="copyToClipboard(this)">Copy</button>
+                    <button class="copy-btn" data-level="l5">Copy</button>
                 </div>
             </div>
         </div>
     </div>
+
 </div>
 
+<!-- Toast -->
+<div id="toast" class="toast"></div>
+
 <script>
-async function loadCSV() {
-    const response = await fetch("data.csv");
-    const text = await response.text();
-
-    const rows = text.trim().split("\n");
-    const headers = rows[0].split(",");
-    const data = rows.slice(1).map(r => {
-        const cols = r.split(",");
-        return {
-            Carrier: cols[0],
-            L1: cols[1],
-            L2: cols[2],
-            L3: cols[3],
-            L4: cols[4],
-            L5: cols[5]
-        };
-    });
-
-    return data;
-}
-
-function copyToClipboard(button) {
-    const level = button.getAttribute('data-level');
-    const text = document.getElementById(level).textContent;
-    
-    if (text === '-') {
-        alert('No data to copy');
-        return;
-    }
-
-    navigator.clipboard.writeText(text).then(() => {
-        button.textContent = 'Copied!';
-        button.classList.add('copied');
-        setTimeout(() => {
-            button.textContent = 'Copy';
-            button.classList.remove('copied');
-        }, 2000);
-    }).catch(err => {
-        alert('Failed to copy');
+async function loadCSV(){
+    const r = await fetch('data.csv');
+    const text = await r.text();
+    const rows = text.trim().split('\n');
+    return rows.slice(1).map(r=>{
+        const c = r.split(',');
+        return { Carrier:c[0], L1:c[1], L2:c[2], L3:c[3], L4:c[4], L5:c[5] };
     });
 }
 
-document.addEventListener("DOMContentLoaded", async () => {
+function showToast(msg, type){
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'toast show ' + (type==='error'?'error':'success');
+    setTimeout(()=> t.className='toast', 2000);
+}
+
+document.addEventListener('DOMContentLoaded', async ()=>{
     const data = await loadCSV();
-    const dropdown = document.getElementById("carrierSelect");
-    const search = document.getElementById("search");
 
-    function populate(list) {
+    const dropdown = document.getElementById('carrierSelect');
+    const search = document.getElementById('search');
+
+    function render(list){
         dropdown.innerHTML = "";
-        list.forEach(item => {
-            let option = document.createElement("option");
-            option.value = item.Carrier;
-            option.textContent = item.Carrier;
-            dropdown.appendChild(option);
+        list.forEach(item=>{
+            const op = document.createElement('option');
+            op.value = item.Carrier;
+            op.textContent = item.Carrier;
+            dropdown.appendChild(op);
         });
     }
 
-    populate(data);
+    render(data);
 
-    search.addEventListener("keyup", () => {
-        const val = search.value.toLowerCase();
-        const filtered = data.filter(d => d.Carrier.toLowerCase().includes(val));
-        populate(filtered);
+    search.addEventListener('input', ()=>{
+        const q = search.value.toLowerCase();
+        render(data.filter(d=>d.Carrier.toLowerCase().includes(q)));
     });
 
-    dropdown.addEventListener("change", () => {
-        const selected = data.find(d => d.Carrier === dropdown.value);
+    dropdown.addEventListener('change', ()=>{
+        const sel = data.find(d=>d.Carrier === dropdown.value);
+        if(!sel) return;
 
-        if (selected) {
-            document.getElementById("l1").textContent = selected.L1 || "-";
-            document.getElementById("l2").textContent = selected.L2 || "-";
-            document.getElementById("l3").textContent = selected.L3 || "-";
-            document.getElementById("l4").textContent = selected.L4 || "-";
-            document.getElementById("l5").textContent = selected.L5 || "-";
+        ['l1','l2','l3','l4','l5'].forEach(id=>{
+            const span = document.getElementById(id);
+            const btn = span.parentElement.querySelector(".copy-btn");
+            const val = sel[id.toUpperCase()]?.trim();
 
-            document.getElementById("details").classList.add("show");
-        }
+            if(!val){
+                span.innerHTML = `<span class="missing-dot"></span> Missing`;
+                btn.style.display = "none";
+            } else {
+                span.textContent = val;
+                btn.style.display = "inline-block";
+            }
+        });
+
+        document.getElementById('details').classList.add('show');
+    });
+
+    document.querySelectorAll('.copy-btn').forEach(btn=>{
+        btn.addEventListener('click', ()=>{
+            const key = btn.dataset.level;
+            const text = document.getElementById(key).textContent;
+            navigator.clipboard.writeText(text);
+            btn.classList.add('copied');
+            btn.textContent = "Copied!";
+            showToast("Copied!", "success");
+            setTimeout(()=>{
+                btn.classList.remove('copied');
+                btn.textContent = "Copy";
+            },1500);
+        });
     });
 });
 </script>
